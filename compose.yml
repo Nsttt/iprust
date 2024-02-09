@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   iprust:
-    build: .
+    image: registry.nst.sh/nsttt/iprust:latest
     ports:
       - "3000:3000"
     environment:
