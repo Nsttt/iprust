@@ -4,8 +4,18 @@ use log::{info, warn};
 use std::{env, io};
 
 async fn get_ip(req: HttpRequest) -> impl Responder {
+    if let Some(x_forwarded_for) = req.headers().get("X-Forwarded-For") {
+        if let Ok(ip) = x_forwarded_for.to_str() {
+            info!("Received request from {}", ip);
+            return format!("{}\n", ip);
+        }
+    }
+
     if let Some(addr) = req.peer_addr() {
-        info!("Received request from {}", addr);
+        warn!(
+            "X-Forwarded-For header missing, fallback to peer_addr: {}",
+            addr
+        );
         format!("{}\n", addr.ip())
     } else {
         warn!("Could not get client IP");
