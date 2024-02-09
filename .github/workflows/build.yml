@@ -1,0 +1,35 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main # Set to your default branch
+  pull_request:
+    branches:
+      - main # Set to your default branch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Log in to registry.nst.sh
+        uses: docker/login-action@v1
+        with:
+          registry: registry.nst.sh
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: registry.nst.sh/nsttt/iprust:latest
+
+      - name: Verify pushed image
+        run: |
+          echo "Image pushed to registry.nst.sh/nsttt/iprust:latest"  # Change to your path
